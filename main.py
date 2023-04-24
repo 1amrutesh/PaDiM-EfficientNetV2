@@ -25,7 +25,7 @@ import torch.nn.functional as F
 from torch.utils.data import DataLoader
 from torchvision.models import wide_resnet50_2, resnet18
 import datasets.mvtec as mvtec
-
+import datasets.miad as miad
 import timm
 from utils import compute_pca, pca_reduction
 
@@ -36,8 +36,8 @@ device = torch.device('cuda' if use_cuda else 'cpu')
 
 def parse_args():
     parser = argparse.ArgumentParser('PaDiM')
-    parser.add_argument('-d', '--data_path', type=str, default='D:/dataset/mvtec_anomaly_detection')
-    parser.add_argument('-s', '--save_path', type=str, default='./mvtec_result')
+    parser.add_argument('-d', '--data_path', type=str, default='electrical_insulator')
+    parser.add_argument('-s', '--save_path', type=str, default='output/electrical_insulator')
     parser.add_argument('-a', '--arch', type=str, choices=['resnet18', 'wide_resnet50_2',
      'efficientnetv2_m_in21ft1k', 'efficientnetv2_xl_in21ft1k', 
      'efficientnet_b5_ns', 'efficientnet_b6_ns', 'efficientnet_b7_ns', 
@@ -136,11 +136,11 @@ def main():
     total_pixel_roc_auc = []
     use_gpu = args.use_gpu
 
-    for class_name in mvtec.CLASS_NAMES:
+    for class_name in miad.CLASS_NAMES:
 
-        train_dataset = mvtec.MVTecDataset(args, class_name=class_name, is_train=True)
+        train_dataset = miad.MIADDataset(args, class_name=class_name, is_train=True)
         train_dataloader = DataLoader(train_dataset, batch_size=args.batch_size, pin_memory=True)
-        test_dataset = mvtec.MVTecDataset(args, class_name=class_name, is_train=False)
+        test_dataset = miad.MIADDataset(args, class_name=class_name, is_train=False)
         test_dataloader = DataLoader(test_dataset, batch_size=args.batch_size, pin_memory=True)
 
         train_outputs = OrderedDict([('layer1', []), ('layer2', []), ('layer3', [])])
